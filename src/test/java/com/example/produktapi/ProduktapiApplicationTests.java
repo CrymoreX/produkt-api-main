@@ -15,54 +15,13 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-
-import static org.springframework.test.util.AssertionErrors.assertEquals;
-import static org.springframework.test.util.AssertionErrors.assertFalse;
-
 import java.util.regex.*;
-
-
-
-/*
 
 @SpringBootTest
 class ProduktapiApplicationTests {
 
-	// SELENIUM TESTS //
-
-	@Test
-	public void checkTitle() {
-
-		WebDriver driver = new ChromeDriver();
-
-
-		// given // Navigate to the given webpage that we want to test
-		driver.get("https://java22.netlify.app/");
-
-		// then
-		assertEquals("Title is not correct", driver.getTitle(),"Webbutik");
-
-		// Closes Chrome afterwards
-		driver.quit();
-	}
-
-	@Test
-	public void checkH1Text(){
-
-		// Get WebDriver first, in this case ChromeDriver and import class
-		WebDriver driver = new ChromeDriver();
-
-		// given // Navigate to the given webpage that we want to test
-		driver.get("https://java22.netlify.app/");
-
-		String h1Text = driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[1]/div/h1")).getText();
-
-		// then
-		assertEquals("Title is not correct", h1Text,"Testdriven utveckling - projekt");
-
-		// Closes Chrome afterwards
-		driver.quit();
-	}
+/*
+public String baseUrl = "https://java22.netlify.app/";
 
 
 	@Test
@@ -73,7 +32,7 @@ class ProduktapiApplicationTests {
 		// This is a MUST for the test to work!
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-		driver.get("https://java22.netlify.app/");
+		driver.get(baseUrl);
 
 		// Hämta det totala antalet produkter och jämför med det förväntade antalet
 		List<WebElement> products = driver.findElements(By.className("productItem"));
@@ -88,8 +47,7 @@ class ProduktapiApplicationTests {
 
 		WebDriver driver = new ChromeDriver();
 
-		driver.get("https://java22.netlify.app/");
-
+		driver.get(baseUrl);
 
 		// ta ut priset från texten
 		WebElement priceElement = new WebDriverWait(driver, Duration.ofSeconds(20))
@@ -104,7 +62,6 @@ class ProduktapiApplicationTests {
 
 		driver.quit();
 
-
 	}
 
 	@Test
@@ -112,7 +69,7 @@ class ProduktapiApplicationTests {
 
 		WebDriver driver = new ChromeDriver();
 
-		driver.get("https://java22.netlify.app/");
+		driver.get(baseUrl);
 
 		WebElement priceElement = new WebDriverWait(driver, Duration.ofSeconds(20))
 				.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[contains(text(), 'Vilken härlig t-shirt, slim fit o casual i ett!')]")));
@@ -143,6 +100,7 @@ class ProduktapiApplicationTests {
 		driver.quit();
 	}
 
+	*/
 }
 
-*/
+
