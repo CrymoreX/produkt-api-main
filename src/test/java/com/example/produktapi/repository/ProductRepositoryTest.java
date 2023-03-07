@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@DataJpaTest // Lägg till
+@DataJpaTest // Add
 class ProductRepositoryTest {
 
-    @Autowired // Lägg till för att ersätta en konstruktor
+    @Autowired // Add this to replace a constructor
     private ProductRepository underTest;
 
     @Test
-    void testingOurRepository() {
+    void whenTestingOurRepositoryWithFindAll_thenShowFalseIfNotEmpty() {
 
             List <Product> products = underTest.findAll();
             Assertions.assertFalse(products.isEmpty());
@@ -63,7 +63,7 @@ class ProductRepositoryTest {
     }
 
     @Test
-    void findByCategory() {
+    void whenFindByCategory_thenCheckIfNotEmpty_thenCheckIfCategoryNameIsTrue() {
 
         String category = "Elektronik";
 
@@ -84,7 +84,7 @@ class ProductRepositoryTest {
     }
 
     @Test
-    void findAllCategories() {
+    void whenSearchingForAllCategories_thenShowHowManyCategoryNamesExist() {
 
         // given
         List <String> existingCategory = new ArrayList<>(Arrays.asList("electronics",
@@ -104,10 +104,5 @@ class ProductRepositoryTest {
         Assertions.assertEquals(4, underTest.findAllCategories().size()); // Kollar antalet kategorier
         Assertions.assertEquals(existingCategory, result); // Kollar om det finns duplicates
 
-
-
     }
-
-
-
 }

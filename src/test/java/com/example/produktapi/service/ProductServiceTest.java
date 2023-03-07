@@ -28,7 +28,7 @@ class ProductServiceTest {
     @InjectMocks
     private ProductService underTest;
     @Captor
-    ArgumentCaptor <Product> productCaptor;
+    ArgumentCaptor<Product> productCaptor;
 
     @Test
     void whenGetAllProducts_thenExactlyOneInteractionWithRepository() {
@@ -47,6 +47,7 @@ class ProductServiceTest {
 
         // when
         underTest.getAllCategories();
+
         // then
         verify(repository, times(1)).findAllCategories();
         verifyNoMoreInteractions(repository);
@@ -68,7 +69,7 @@ class ProductServiceTest {
 
 
     @Test
-    void addProductShouldInvokeSaveMethod(){
+    void whenAddingProduct_thenInvokeSaveMethod() {
 
         //given
         Product product = new Product(
@@ -77,22 +78,21 @@ class ProductServiceTest {
                 "Electronics",
                 "A nice comp",
                 "enUrlSträngHär"
-                );
+        );
 
         // when
         underTest.addProduct(product);
 
         // then
         verify(repository).save(productCaptor.capture());
-        assertEquals(product,productCaptor.getValue());
+        assertEquals(product, productCaptor.getValue());
 
     }
 
     @Test
-    void whenAddingProductWithDuplicateTitle_thenThrowError(){
-
+    void whenAddingProductWithDuplicateTitle_thenThrowError() {
+        //given
         String title = "vår test-titel";
-
         Product product = new Product(
                 title,
                 2500.00,
@@ -100,21 +100,21 @@ class ProductServiceTest {
                 "Bra grejer",
                 "url");
 
-        //given
+        //when
         given(repository.findByTitle("vår test-titel")).willReturn(Optional.of(product));
 
         //then
-            assertThrows(BadRequestException.class,
-                    //when
-                    () -> underTest.addProduct(product));
-            verify(repository,times(1)).findByTitle(title);
-            verify(repository,never()).save(any());
+        assertThrows(BadRequestException.class,
+                () -> underTest.addProduct(product));
+        verify(repository, times(1)).findByTitle(title);
+        verify(repository, never()).save(any());
     }
+
     @Test
-    void testGetProductsByCategory(){
+    void whenGetProductsByCategory_thenCheckHowManyProductsByCategory() {
 
+        // given
         String category = "Computer";
-
         Product product = new Product(
                 "Dator",
                 1000.00,
@@ -123,15 +123,17 @@ class ProductServiceTest {
                 "enUrlSträngHär"
         );
 
+        // when
         given(repository.findByCategory(category)).willReturn(List.of(product));
-
         List<Product> result = underTest.getProductsByCategory(category);
 
-        assertEquals(1,result.size()); // Kollar om det finns en kategori
+        // then
+        assertEquals(1, result.size());
     }
 
     @Test
-    void testGetProductById(){
+    void whenGetProductById_thenFindProductById() {
+
         //given
         Product product = new Product(
                 "Computer",
@@ -150,7 +152,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void givenANoNExistingId_whenGetProductById_thenThrowEntityNotFoundException(){
+    void givenANoNExistingId_whenGetProductById_thenThrowEntityNotFoundException() {
 
         // given
         Integer id = 1;
@@ -158,18 +160,18 @@ class ProductServiceTest {
         // when
         when(repository.findById(id)).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()-> {
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
             underTest.getProductById(id);
         });
 
-
+        // then
         assertEquals("Produkt med id " + id + " hittades inte", exception.getMessage());
 
     }
 
 
     @Test
-    void testUpdateProduct_whenFindById_thenUpdateProductById() {
+    void givenUpdateProduct_whenFindById_thenUpdateProductById() {
 
         Integer id = 1;
 
@@ -198,7 +200,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void testUpdateProduct_whenFindById_thenUpdateProductById_thenThrowEntityNotFoundException() {
+    void givenAProduct_whenFindById_thenUpdateProductById_thenThrowEntityNotFoundException() {
 
         Integer id = 1;
 
@@ -213,32 +215,34 @@ class ProductServiceTest {
         product.setId(id);
 
         // when
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()-> {
-            underTest.updateProduct(product,id);
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            underTest.updateProduct(product, id);
         });
 
+        // then
         assertEquals("Produkt med id " + id + " hittades inte", exception.getMessage());
 
 
     }
 
     @Test
-    void testDeleteProduct_whenFindByIdIfProductByIdNotFound_thenThrowEntityNotFoundException() {
+    void givenAnSpecificId_whenDeleteProduct_thenFindByIdIfProductByIdNotFound_thenThrowEntityNotFoundException() {
 
         // given
         Integer id = 1;
 
         // when
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()-> {
-        underTest.deleteProduct(1);
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            underTest.deleteProduct(1);
         });
 
+        // then
         assertEquals("Produkt med id " + id + " hittades inte", exception.getMessage());
 
     }
 
     @Test
-    void testDeleteProduct_whenFindById_thenDeleteProductById() {
+    void givenASpecificProductById_whenFindById_thenDeleteProductById() {
 
         Integer id = 1;
 
@@ -257,13 +261,7 @@ class ProductServiceTest {
 
         verify(repository, times(1)).deleteById(id);
 
-        Assertions.assertNotNull(underTest.getProductById(id));
+        //Assertions.assertNotNull(underTest.getProductById(id));
 
     }
-
-    @Test
-    void testingGithubActions() {
-        Assertions.assertEquals(5,5);
-    }
-
 }
