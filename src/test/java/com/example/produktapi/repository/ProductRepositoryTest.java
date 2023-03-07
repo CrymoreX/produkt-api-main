@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest // Add
 class ProductRepositoryTest {
 
-    @Autowired // Add this to replace a constructor
+    @Autowired // Add
     private ProductRepository underTest;
 
     @Test
@@ -29,24 +29,26 @@ class ProductRepositoryTest {
         }
 
     @Test
-    void whenSearchingForExistingTitle_thenReturnProduct() {
+    void givenProductTitle_whenSearchingForExistingTitle_thenCheckIfPresent_thenReturnProductWithCorrectTitle() {
 
+        // given
         Product product = new Product("Dator", 20000.00, "Elektronik",
                 "Används för att koda i java", "urlSträng");
 
-
         underTest.save(product);
 
+        // when
         Optional <Product> result = underTest.findByTitle(product.getTitle());
+
+        // then
         Assertions.assertAll(
                 ()-> assertTrue(result.isPresent()),
                 ()-> assertEquals(result.get().getTitle(), "Dator")
-
         );
     }
 
     @Test
-    void whenSearchingForNonExistingTitle_thenReturnEmptyOptional(){
+    void whenSearchingForNonExistingTitle_thenReturnEmptyOptional_thenIfFalseThrowException(){
 
         // given
         String title = "Titeln finns inte";
@@ -58,16 +60,16 @@ class ProductRepositoryTest {
         Assertions.assertAll(
                 () -> assertFalse(result.isPresent()),
                 () -> assertTrue(result.isEmpty()),
-                () -> assertThrows(Exception.class,()->result.get(),"Detta meddelande syns om det blir fel")
+                () -> assertThrows(Exception.class,()->result.get(),
+                        "Detta meddelande syns om det blir fel")
         );
     }
 
     @Test
-    void whenFindByCategory_thenCheckIfNotEmpty_thenCheckIfCategoryNameIsTrue() {
-
-        String category = "Elektronik";
+    void givenACategoryNameAndSavingProduct_whenFindByCategory_thenCheckIfNotEmpty_thenCheckIfCategoryNameIsTheSameAsGiven() {
 
         // given
+        String category = "Elektronik";
         Product product = new Product("Dator", 20000.00, category,
                 "Används för att koda i java", "urlSträng");
 
@@ -84,25 +86,21 @@ class ProductRepositoryTest {
     }
 
     @Test
-    void whenSearchingForAllCategories_thenShowHowManyCategoryNamesExist() {
+    void givenAListOfExistingCategories_whenSearchingForAllCategories_thenCheckForDuplicates_thenCheckCategorySize() {
 
         // given
-        List <String> existingCategory = new ArrayList<>(Arrays.asList("electronics",
+        List <String> existingCategory = new ArrayList<>(Arrays.asList(
+                "electronics",
                 "jewelery",
                 "men's clothing",
                 "women's clothing"));
-
-
-        List <String> uniqueCategories = existingCategory.stream().distinct().collect(Collectors.toList());
-
-        System.out.println(uniqueCategories);
 
         // when
         List <String> result = underTest.findAllCategories();
 
         // then
-        Assertions.assertEquals(4, underTest.findAllCategories().size()); // Kollar antalet kategorier
-        Assertions.assertEquals(existingCategory, result); // Kollar om det finns duplicates
+        Assertions.assertEquals(4, underTest.findAllCategories().size()); // Check amount of categories
+        Assertions.assertEquals(existingCategory, result); // Check for duplicates
 
     }
 }

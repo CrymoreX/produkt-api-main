@@ -43,7 +43,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void whenGetAllCategories_thenExactlyOneInteractionWithRepositoryGetByCategory() {
+    void whenGetAllCategories_thenExactlyOneInteractionWithRepositoryMethodFindAllCategories() {
 
         // when
         underTest.getAllCategories();
@@ -57,10 +57,12 @@ class ProductServiceTest {
     @Test
     void givenAnExistingCategory_whenGetProductsByCategory_thenShowANonEmptyList() {
 
-        //given
+        // given
         String category = "Electronics";
+
         // when
         underTest.getProductsByCategory(category);
+
         // then
         verify(repository, times(1)).findByCategory(category);
         verifyNoMoreInteractions(repository);
@@ -69,9 +71,9 @@ class ProductServiceTest {
 
 
     @Test
-    void whenAddingProduct_thenInvokeSaveMethod() {
+    void givenAnExistingId_whenAddingProduct_thenInvokeSaveMethod() {
 
-        //given
+        // given
         Product product = new Product(
                 "Computer",
                 10000.00,
@@ -90,8 +92,9 @@ class ProductServiceTest {
     }
 
     @Test
-    void whenAddingProductWithDuplicateTitle_thenThrowError() {
-        //given
+    void givenAnExistingTitle_whenAddingProductWithDuplicateTitle_thenThrowBadExceptionError() {
+
+        // given
         String title = "vår test-titel";
         Product product = new Product(
                 title,
@@ -100,10 +103,10 @@ class ProductServiceTest {
                 "Bra grejer",
                 "url");
 
-        //when
+        // when
         given(repository.findByTitle("vår test-titel")).willReturn(Optional.of(product));
 
-        //then
+        // then
         assertThrows(BadRequestException.class,
                 () -> underTest.addProduct(product));
         verify(repository, times(1)).findByTitle(title);
@@ -111,7 +114,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void whenGetProductsByCategory_thenCheckHowManyProductsByCategory() {
+    void givenAnExistingCategory_whenGetProductsByCategory_thenCheckHowManyProductsByCategory() {
 
         // given
         String category = "Computer";
@@ -132,9 +135,9 @@ class ProductServiceTest {
     }
 
     @Test
-    void whenGetProductById_thenFindProductById() {
+    void givenAProduct_whenAddProduct_thenGetProductById_thenCheckIfExistingProductIsFoundById() {
 
-        //given
+        // given
         Product product = new Product(
                 "Computer",
                 10000.00,
@@ -159,23 +162,20 @@ class ProductServiceTest {
 
         // when
         when(repository.findById(id)).thenReturn(Optional.empty());
-
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
             underTest.getProductById(id);
         });
 
         // then
         assertEquals("Produkt med id " + id + " hittades inte", exception.getMessage());
-
     }
 
 
     @Test
-    void givenUpdateProduct_whenFindById_thenUpdateProductById() {
+    void givenTwoProducts_whenFindById_thenVerifyNewProduct() {
 
+        // given
         Integer id = 1;
-
-        //given
         Product product = new Product(
                 "Computer",
                 10000.00,
@@ -185,26 +185,29 @@ class ProductServiceTest {
         );
         product.setId(id);
 
-        Product updatedProduct = new Product();
-        updatedProduct.setTitle("Updated Snowflake");
+        Product productNew = new Product(
+                "Computor",
+                35.0,
+                "Electronics",
+                "Description of item",
+                "URL");
 
         // when
-        when(repository.findById(id)).thenReturn(Optional.of(updatedProduct));
-        when(repository.save(updatedProduct)).thenReturn(updatedProduct);
-
-        Product result = underTest.updateProduct(updatedProduct, id);
+        when(repository.findById(id)).thenReturn(Optional.of(product));
+        underTest.updateProduct(productNew, product.getId());
 
         // then
-        assertEquals("Updated Snowflake", result.getTitle());
+        verify(repository, times(1)).findById(product.getId());
+        verify(repository, times(1)).save(productNew); // This is where we check products
+        verifyNoMoreInteractions(repository);
 
     }
 
     @Test
-    void givenAProduct_whenFindById_thenUpdateProductById_thenThrowEntityNotFoundException() {
+    void givenAProductId_whenFindById_thenCheckIfIdMatch_thenIfNotValidThenThrowEntityNotFoundException() {
 
+        // given
         Integer id = 1;
-
-        //given
         Product product = new Product(
                 "Computer",
                 10000.00,
@@ -213,16 +216,16 @@ class ProductServiceTest {
                 "enUrlSträngHär"
         );
         product.setId(id);
+
+        when(repository.findById(id)).thenReturn(Optional.empty());
 
         // when
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            underTest.updateProduct(product, id);
+        underTest.updateProduct(product, id);
         });
 
         // then
         assertEquals("Produkt med id " + id + " hittades inte", exception.getMessage());
-
-
     }
 
     @Test
@@ -233,7 +236,7 @@ class ProductServiceTest {
 
         // when
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            underTest.deleteProduct(1);
+        underTest.deleteProduct(1);
         });
 
         // then
@@ -242,10 +245,10 @@ class ProductServiceTest {
     }
 
     @Test
-    void givenASpecificProductById_whenFindById_thenDeleteProductById() {
+    void givenASpecificProductById_whenSearchingForAnId_thenRunMethodExactlyOneTime_thenDeleteProductById() {
 
+        // given
         Integer id = 1;
-
         Product product = new Product(
                 "Computer",
                 10000.00,
@@ -255,13 +258,11 @@ class ProductServiceTest {
         );
         product.setId(id);
 
+        // when
         when(repository.findById(1)).thenReturn(Optional.of(product)); //expect a fetch, return a "fetched" product;
-
         underTest.deleteProduct(id);
 
+        // then
         verify(repository, times(1)).deleteById(id);
-
-        //Assertions.assertNotNull(underTest.getProductById(id));
-
     }
 }
